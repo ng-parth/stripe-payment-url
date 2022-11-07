@@ -1,0 +1,22 @@
+{
+  "name": "stripe-payment-url",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halalbox/stripe-payment-url.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/halalbox/stripe-payment-url/issues"
+  },
+  "homepage": "https://github.com/halalbox/stripe-payment-url#readme",
+  "dependencies": {
+    "stripe": "^10.16.0"
+  }
+}
