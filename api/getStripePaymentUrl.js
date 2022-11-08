@@ -59,5 +59,5 @@ const paymentUrl = session.url;
   response.status(200).json({paymentUrl});
 }
 
-// export default allowCors(getStripePaymentUrl);
-export default getStripePaymentUrl;  
+export default allowCors(getStripePaymentUrl);
+// export default getStripePaymentUrl;  
