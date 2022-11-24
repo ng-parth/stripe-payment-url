@@ -1,35 +1,35 @@
 const { STRIPE_PVT_KEY } = process.env;
 const stripe = require('stripe')(STRIPE_PVT_KEY);
 
-const allowCors = fn => async (req, res) => {
-  const origin = req.headers?.origin;
-  // console.log('Origin: ', origin);
-  if (origin && !(
-      origin.indexOf('localhost') > -1 || 
-      origin.indexOf('vercel') > -1 || 
-      origin.indexOf('heroku') > -1 || 
-      origin.indexOf('ome-extension') > -1
-    )
-  ) {
-    res.status(401).end();
-    return;
-  }
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', origin);
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  // res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
+// const allowCors = fn => async (req, res) => {
+//   const origin = req.headers?.origin;
+//   // console.log('Origin: ', origin);
+//   if (origin && !(
+//       origin.indexOf('localhost') > -1 || 
+//       origin.indexOf('vercel') > -1 || 
+//       origin.indexOf('heroku') > -1 || 
+//       origin.indexOf('ome-extension') > -1
+//     )
+//   ) {
+//     res.status(401).end();
+//     return;
+//   }
+//   res.setHeader('Access-Control-Allow-Credentials', true)
+//   res.setHeader('Access-Control-Allow-Origin', origin);
+//   // another common pattern
+//   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+//   // res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+//   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST')
+//   res.setHeader(
+//     'Access-Control-Allow-Headers',
+//     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+//   )
+//   if (req.method === 'OPTIONS') {
+//     res.status(200).end()
+//     return
+//   }
+//   return await fn(req, res)
+// }
 const cartItems = [
   {
     "productId": 115,
@@ -342,9 +342,11 @@ const getResizedImageUrl = url => {
 const getPrice = ({onSale, retailPrice, salePrice}) => (onSale && salePrice) || retailPrice;
 const getLineItems = () => {
   const lineItems = [];
+  let amount = 0;
   for(let i = 0; i < cartItems.length; i++) {
     if (Math.random() > 0.5) {
         const cartItem = cartItems[i];
+        amount += (getPrice(cartItem) * 100);
         lineItems.push({
             quantity: cartItem.inCartQty,
             price_data: {
@@ -352,13 +354,23 @@ const getLineItems = () => {
                 unit_amount: getPrice(cartItem) * 100,
                 product_data: {
                     name: cartItem.productName,
-                    images: [getResizedImageUrl(cartItem.imageUrl)],
+                    // images: [getResizedImageUrl(cartItem.imageUrl)],
                 },
             }
         });
     }
   }
-  return lineItems;
+  const finalItem = [{
+    quantity: 1,
+    price_data: {
+      currency: 'usd',
+      unit_amount:  amount,
+      product_data: {
+        name: lineItems[0].price_data.product_data.name + ` ${lineItems.length > 1 ? `+ ${lineItems.length-1} more item(s)` : ''}`,
+      }
+    }
+  }]
+  return finalItem;
 }
 const generateRandomNumber = prefix => prefix + '_' + Math.round(Math.random() * 10000);
 
@@ -375,25 +387,35 @@ async function getStripePaymentUrl(request, response) {
    } = request.query;
    const line_items = getLineItems();
   //  console.log('Line Items: ', JSON.stringify(line_items));
-  const session = await stripe.checkout.sessions.create({
-    // line_items: [
-    //   {
-    //     // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-    //     price: priceId,
-    //     quantity,
-    //   },
-    // ],
-    line_items,
-    mode: 'payment',
-    success_url: surl + `?order=${orderNo}`,
-    cancel_url: curl + `?order=${orderNo}`,
-    client_reference_id: orderNo ,
-    currency: 'usd',
-  });
-  const paymentUrl = session.url;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      // line_items: [
+      //   {
+      //     // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
+      //     price: priceId,
+      //     quantity,
+      //   },
+      // ],
+      line_items,
+      mode: 'payment',
+      success_url: surl + `?order=${orderNo}`,
+      cancel_url: curl + `?order=${orderNo}`,
+      client_reference_id: orderNo ,
+      currency: 'usd',
+    });
+    const paymentUrl = session.url;
+    response.status(200).json(session);
+  } catch (e) {
+    response.status(400).json(e);
+  }
   
-  response.status(200).json({paymentUrl});
 }
 
 // export default allowCors(getStripePaymentUrl);
-export default getStripePaymentUrl;  
+export default getStripePaymentUrl;
+
+
+// const express = require('express');
+// const app = express();
+// app.get('/', getStripePaymentUrl);
+// app.listen(4242, () => console.log('Running on port 4242'));
