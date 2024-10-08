@@ -21,11 +21,13 @@ const bnplResp = {
             },
             Mobizip: {
                 status: 1,
-                availableBalance: 500, // only if applicable
+                // availableBalance: 500, // only if applicable
                 kfsLink: 'https://www.somekfsLink.com', // only if applicable
-                eligible: true,
-                customerLinked: true,
-                PayuToken: 'Token12345'
+                eligible: false, // based on amount and not to return available balance if eligible is false
+                customerLinked: false,
+                failure_code: 'E2408',
+                failure_reason:
+                'The transaction or loan amount is greater than the available credit line with the customer'
             }
         }
     }
