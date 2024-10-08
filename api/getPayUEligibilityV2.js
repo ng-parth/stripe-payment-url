@@ -6,7 +6,7 @@ async function getPayUEligibilityV2(request, response) {
       bnpl: {all: {
         Lazypay: {
           status: 1,
-          availableBalance: 500, // only if applicable
+          availableBalance: 100, // only if applicable
           kfsLink: 'https://www.somekfsLink.com', // only if applicable
           eligible: true,
           customerLinked: true,
@@ -24,7 +24,7 @@ async function getPayUEligibilityV2(request, response) {
         },
         Mobizip: {
           status: 1,
-          availableBalance: 2000, // only if applicable
+          availableBalance: 500, // only if applicable
           kfsLink: 'https://www.somekfsLink.com', // only if applicable
           eligible: true,
           customerLinked: true,
