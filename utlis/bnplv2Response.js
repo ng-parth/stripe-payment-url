@@ -33,5 +33,52 @@ const bnplResp = {
     }
   };
 
-  export const bnpl2Original = bnplResp;
-  module.exports = {bnpl2Original: bnplResp}
+const latestBnplV2Response = {
+    "httpCode": "200",
+    "message": "",
+    "status": 1,
+    "data": {
+        "pg": {
+            "BNPL": {
+                "bankCode": {
+                    "SIMPL": {
+                        "phone": "8866255483",
+                        "payuToken": null,
+                        "kfsLink": "",
+                        "isLinked": false,
+                        "isEligible": true,
+                        "linkFailureReason": "Never Linked",
+                        "eligibilityFailureReason": null,
+                        "eligibilityErrorCode": null,
+                        "availableBalance": null,
+                    },
+                    "LAZYPAY": {
+                        "phone": "8866255483",
+                        "payuToken": null,
+                        "kfsLink": "",
+                        "isLinked": false,
+                        "isEligible": true,
+                        "linkFailureReason": "Never Linked",
+                        "eligibilityFailureReason": null,
+                        "eligibilityErrorCode": null,
+                        "availableBalance": 10
+                    },
+                    "MOBIZIP": {
+                        "phone": "8866255483",
+                        "payuToken": null,
+                        "kfsLink": "",
+                        "isLinked": false,
+                        "isEligible": true,
+                        "linkFailureReason": "Never Linked",
+                        "eligibilityFailureReason": null,
+                        "eligibilityErrorCode": null,
+                        "availableBalance": null
+                    }
+                }
+            }
+        }
+    }
+}
+
+  export const bnpl2Original = latestBnplV2Response;
+  module.exports = {bnpl2Original: latestBnplV2Response}
